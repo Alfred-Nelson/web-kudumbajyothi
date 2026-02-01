@@ -29,3 +29,7 @@ temp-content.js
 
 # Dotenv and similar local-only files
 *.local
+
+
+*-lock.json
+*.lock
