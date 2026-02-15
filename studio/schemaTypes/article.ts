@@ -6,7 +6,6 @@ export default defineType({
     type: 'document',
     fieldsets: [
         { name: 'titles', title: 'Titles & URL', options: { collapsible: true, collapsed: false } },
-        // REMOVED "media" fieldset from here
         { name: 'settings', title: 'Settings', options: { columns: 1 } },
         { name: 'extras', title: 'Sidebar / Extras', options: { collapsible: true, collapsed: false } }
     ],
@@ -43,13 +42,11 @@ export default defineType({
             rows: 3,
         }),
 
-        // --- IMAGE (No Fieldset Needed) ---
-        // The customImage type ALREADY creates a box for File + Alt + Caption
+        // --- IMAGE ---
         defineField({
             name: 'mainImage',
             title: 'Main Image',
             type: 'customImage',
-            // Removed fieldset: 'media'
         }),
 
         // --- GROUP 2: SETTINGS ---
@@ -71,7 +68,7 @@ export default defineType({
         defineField({
             name: 'categories',
             title: 'Categories',
-            description: 'Select one or more categories (e.g. Faith, Healthcare)',
+            description: 'Select one or more categories',
             type: 'array',
             of: [{ type: 'reference', to: [{ type: 'category' }] }],
             fieldset: 'settings',
@@ -109,5 +106,23 @@ export default defineType({
             of: [{ type: 'reference', to: [{ type: 'side' }] }],
             fieldset: 'extras'
         })
-    ]
+    ],
+    // --- PREVIEW CONFIGURATION ---
+    preview: {
+        select: {
+            title: 'title',
+            subtitle: 'malayalamTitle',
+            authorName: 'author.name', // This fetches the name inside the author reference
+            media: 'mainImage.file'
+        },
+        prepare(selection) {
+            const { title, subtitle, authorName, media } = selection
+            return {
+                title: title,
+                // Combines Malayalam title + Author for a rich subtitle
+                subtitle: `${subtitle || ''} ${authorName ? `— by ${authorName}` : ''}`,
+                media: media
+            }
+        }
+    }
 })
