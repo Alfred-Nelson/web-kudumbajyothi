@@ -1,49 +1,84 @@
-import Image from "next/image";
 import APIS from "@/sanity/api";
-import { urlFor } from "@/sanity/image";
-import { Article } from "@/sanity/types";
-import Link from "next/link";
+import Layout1 from "./components/layouts/One";
+import Layout2 from "./components/layouts/Two";
+import { LayoutKindType, LayoutPropsType } from "@/sanity/general_types";
+import Layout3 from "./components/layouts/Three";
+import Layout5 from "./components/layouts/Five";
+import Layout6 from "./components/layouts/Six";
+
+const ApplyLayout = <T,>({ type, ...props }: LayoutPropsType<T> & { type: LayoutKindType }) => {
+  if (type === "layout1") {
+    return <Layout1 {...props} />
+  } else if (type === "layout2") {
+    return <Layout2 {...props} />
+  } else if (type === "layout3") {
+    return <Layout3 {...props} />
+  } else if (type === "layout4") {
+    return <Layout1 {...props} />
+  } else if (type === "layout5") {
+    return <Layout5 {...props} />
+  } else if (type === "layout6") {
+    return <Layout6 {...props} />
+  }
+}
 
 export default async function Home() {
+  const config = await APIS.getConfig()
 
-  const collection = await APIS.getCollections()
-  // const featured = collection.find(each => each.slug?.current === "featured")
-  // const featuredArticles = featured?.articles?.map((article: Article) => {
-  //   const imgUrl = urlFor(article.mainImage?.file)?.width(1920).height(1080).url()
-  //   return { ...article, mainImage: { ...article.mainImage, url: imgUrl } }
-  // })
-
-  const formattedCollection = collection.map(each => {
-    const articles = each.articles?.map((article: Article) => {
-      const imgUrl = !!article.mainImage ? urlFor(article.mainImage?.file)?.width(1920).height(1080).url() : null
-      return { ...article, mainImage: article.mainImage ? { ...article.mainImage, url: imgUrl } : null }
-    })
-    return { ...each, articles }
-  })
+  if (!config || Array.isArray(config)) {
+    throw new Error("Kindly set up the config")
+  }
 
   return (
-    <main className="mt-20">
-      {formattedCollection.map(each => {
-        return (
-          <div key={each._id}>
-            <div className="text-4xl font-bold pt-6">{each.title}</div>
-            <div className="grid grid-cols-3 w-full mt-(--gutter-width) gap-(--gutter-width)">
-              {each.articles?.map(article => (
-                <Link key={article._id} href={"/articles/" + article._id}>
-                  <span className="block w-full h-120 rounded-md overflow-hidden relative group bg-stone-700">
-                    {!!article.mainImage && (<Image src={article.mainImage.url} alt={article.mainImage.alt || "image of article"} fill className="object-cover group-hover:scale-120 transition ease-in-out duration-300" />)}
-                    <span className="block h-fit w-full absolute bottom-0 left-0 bg-gradient-to-t from-black/90 via-80% via-black/60 to-transparent group-hover:bg-black/60 transition ease-in-out z-5">
-                      <span className="z-10 block relative text-center text-balance bottom-0 px-(--gutter-width) py-4 text-white">
-                        <h3 className="text-2xl font-bold mb-3">{article.malayalamTitle}</h3>
-                        <p>{article.description}<span className="inline">{" "}Read More {">"}</span></p>
-                      </span>
-                    </span>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )
+    <main className="mt-24 wrap-break-word space-y-8">
+      {config.sections?.map((section) => {
+
+        if (section._type === "collectionSection") {
+          return (<ApplyLayout
+            key={section._key}
+            items={section.collection?.layoutArticles!}
+            heading={(item) => item.malayalamTitle}
+            image={(item) => item.mainImage}
+            link={(item) => `/articles/${item.slug?.current}`}
+            description={(item) => item.description}
+            subDescription={(item) => `–– ${item.author?.malayalamName} ––`}
+            type={section.layout!}
+            title={section.showTitle ? section.collection?.malayalamTitle! : ""}
+          />)
+        }
+
+        if (section._type === "authorsSection") {
+          return (
+            <ApplyLayout
+              key={section._key}
+              items={section.authors!}
+              heading={(item) => item.malayalamName}
+              link={(item) => `/authors/${item.slug?.current}`}
+              image={(item) => item.profileImage}
+              type={section.layout!}
+              title={section.showTitle ? "ലേഖകർ" : ""}
+            />
+          )
+        }
+
+        if (section._type === "regularsSection") {
+          return (
+            <ApplyLayout
+              key={section._key}
+              items={section.regulars!}
+              heading={(item) => item.malayalamTitle}
+              description={(item) => item.description}
+              image={(item) => item.coverImage}
+              link={(item) => `/regulars/${item.slug?.current}`}
+              subDescription={(item) => {
+                const count = item.parts?.length
+                return (`${count || 0} article${count === 1 ? "" : "s"}`)
+              }}
+              type={section.layout!}
+              title={section.showTitle ? "പംക്തികൾ" : ""}
+            />
+          );
+        }
       })}
     </main>
   );

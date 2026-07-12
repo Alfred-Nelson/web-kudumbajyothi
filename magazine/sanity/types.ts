@@ -12,7 +12,131 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 // Source: schema.json
+export type RegularReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "regular";
+};
+
+export type RegularsSection = {
+  _type: "regularsSection";
+  title?: string;
+  malayalamTitle?: string;
+  showTitle?: boolean;
+  layout?:
+    | "layout1"
+    | "layout2"
+    | "layout3"
+    | "layout4"
+    | "layout5"
+    | "layout6";
+  regulars?: Array<
+    {
+      _key: string;
+    } & RegularReference
+  >;
+};
+
+export type CollectionReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "collection";
+};
+
+export type CollectionSection = {
+  _type: "collectionSection";
+  collection?: CollectionReference;
+  showTitle?: boolean;
+  layout?:
+    | "layout1"
+    | "layout2"
+    | "layout3"
+    | "layout4"
+    | "layout5"
+    | "layout6";
+};
+
+export type AuthorReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "author";
+};
+
+export type AuthorsSection = {
+  _type: "authorsSection";
+  title?: string;
+  malayalamTitle?: string;
+  showTitle?: boolean;
+  layout?:
+    | "layout1"
+    | "layout2"
+    | "layout3"
+    | "layout4"
+    | "layout5"
+    | "layout6";
+  authors?: Array<
+    {
+      _key: string;
+    } & AuthorReference
+  >;
+};
+
+export type AdvertisementSection = {
+  _type: "advertisementSection";
+  title?: string;
+  image?: CustomImage;
+  link?: string;
+};
+
+export type Settings = {
+  _id: string;
+  _type: "settings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  sections?: Array<
+    | ({
+        _key: string;
+      } & CollectionSection)
+    | ({
+        _key: string;
+      } & AuthorsSection)
+    | ({
+        _key: string;
+      } & RegularsSection)
+    | ({
+        _key: string;
+      } & AdvertisementSection)
+  >;
+};
+
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type CustomImage = {
+  _type: "customImage";
+  file?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  alt?: string;
+  placement?: "background" | "sides" | "top" | "bottom";
+  caption?: string;
+};
+
 export type ArticleReference = {
   _ref: string;
   _type: "reference";
@@ -27,9 +151,17 @@ export type Collection = {
   _updatedAt: string;
   _rev: string;
   title?: string;
+  malayalamTitle?: string;
   slug?: Slug;
   description?: string;
+  orderRank?: string;
+  type?: "layout1" | "layout2" | "layout3" | "layout4" | "layout5" | "layout6";
   articles?: Array<
+    {
+      _key: string;
+    } & ArticleReference
+  >;
+  layoutArticles?: Array<
     {
       _key: string;
     } & ArticleReference
@@ -54,26 +186,6 @@ export type Side = {
   image?: CustomImage;
 };
 
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-};
-
-export type CustomImage = {
-  _type: "customImage";
-  file?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-  alt?: string;
-  caption?: string;
-};
-
 export type Category = {
   _id: string;
   _type: "category";
@@ -86,25 +198,11 @@ export type Category = {
   image?: CustomImage;
 };
 
-export type AuthorReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "author";
-};
-
 export type CategoryReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "category";
-};
-
-export type RegularReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "regular";
 };
 
 export type SideReference = {
@@ -134,28 +232,42 @@ export type Article = {
   >;
   series?: RegularReference;
   tags?: Array<string>;
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
-    listItem?: "bullet" | "number";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  relatedSides?: Array<
-    {
-      _key: string;
-    } & SideReference
+  contentLayout?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "normal"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "blockquote";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | ({
+        _key: string;
+      } & SideReference)
+    | {
+        adFormat?: "display" | "in-feed" | "in-article";
+        label?: string;
+        _type: "adComponent";
+        _key: string;
+      }
   >;
 };
 
@@ -186,6 +298,7 @@ export type Author = {
   name?: string;
   malayalamName?: string;
   slug?: Slug;
+  orderRank?: string;
   profileImage?: CustomImage;
   bio?: string;
 };
@@ -304,16 +417,22 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | RegularReference
+  | RegularsSection
+  | CollectionReference
+  | CollectionSection
+  | AuthorReference
+  | AuthorsSection
+  | AdvertisementSection
+  | Settings
+  | SanityImageAssetReference
+  | CustomImage
   | ArticleReference
   | Collection
   | Slug
   | Side
-  | SanityImageAssetReference
-  | CustomImage
   | Category
-  | AuthorReference
   | CategoryReference
-  | RegularReference
   | SideReference
   | Article
   | Regular
@@ -329,10 +448,412 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
-export declare const internalGroqTypeReferenceTo: unique symbol;
+// Source: ../magazine/sanity/api.ts
+// Variable: CONFIG
+// Query: *[_type == "settings"][0]{    sections[]{      ...,      // --------------------------------      // COLLECTION SECTION      // --------------------------------      _type == "collectionSection" => {        ...,        collection->{          ...,          "curatedCount": count(articles),          "articles": null,          "contentLayout": null,          layoutArticles[]->{            ...,              author->{              ...,            }          }        }      },        // --------------------------------      // AUTHORS SECTION      // --------------------------------      _type == "authorsSection" => {        ...,          authors[]->{          ...,        }      },        // --------------------------------      // REGULARS SECTION      // --------------------------------      _type == "regularsSection" => {        ...,          regulars[]->{          ...,        }      },        // --------------------------------      // AD SECTION      // --------------------------------      _type == "advertisementSection" => {        ...      }      }  }
+export type CONFIG_RESULT = {
+  sections: Array<
+    | {
+        _key: string;
+        _type: "advertisementSection";
+        title?: string;
+        image?: CustomImage;
+        link?: string;
+      }
+    | {
+        _key: string;
+        _type: "authorsSection";
+        title?: string;
+        malayalamTitle?: string;
+        showTitle?: boolean;
+        layout?:
+          | "layout1"
+          | "layout2"
+          | "layout3"
+          | "layout4"
+          | "layout5"
+          | "layout6";
+        authors: Array<{
+          _id: string;
+          _type: "author";
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          name?: string;
+          malayalamName?: string;
+          slug?: Slug;
+          orderRank?: string;
+          profileImage?: CustomImage;
+          bio?: string;
+        }> | null;
+      }
+    | {
+        _key: string;
+        _type: "collectionSection";
+        collection: {
+          _id: string;
+          _type: "collection";
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          title?: string;
+          malayalamTitle?: string;
+          slug?: Slug;
+          description?: string;
+          orderRank?: string;
+          type?:
+            | "layout1"
+            | "layout2"
+            | "layout3"
+            | "layout4"
+            | "layout5"
+            | "layout6";
+          articles: null;
+          layoutArticles: Array<{
+            _id: string;
+            _type: "article";
+            _createdAt: string;
+            _updatedAt: string;
+            _rev: string;
+            title?: string;
+            malayalamTitle?: string;
+            slug?: Slug;
+            description?: string;
+            mainImage?: CustomImage;
+            publishedAt?: string;
+            author: {
+              _id: string;
+              _type: "author";
+              _createdAt: string;
+              _updatedAt: string;
+              _rev: string;
+              name?: string;
+              malayalamName?: string;
+              slug?: Slug;
+              orderRank?: string;
+              profileImage?: CustomImage;
+              bio?: string;
+            } | null;
+            categories?: Array<
+              {
+                _key: string;
+              } & CategoryReference
+            >;
+            series?: RegularReference;
+            tags?: Array<string>;
+            contentLayout?: Array<
+              | ({
+                  _key: string;
+                } & SideReference)
+              | {
+                  adFormat?: "display" | "in-article" | "in-feed";
+                  label?: string;
+                  _type: "adComponent";
+                  _key: string;
+                }
+              | {
+                  children?: Array<{
+                    marks?: Array<string>;
+                    text?: string;
+                    _type: "span";
+                    _key: string;
+                  }>;
+                  style?:
+                    | "blockquote"
+                    | "h1"
+                    | "h2"
+                    | "h3"
+                    | "h4"
+                    | "h5"
+                    | "h6"
+                    | "normal";
+                  listItem?: "bullet" | "number";
+                  markDefs?: Array<{
+                    href?: string;
+                    _type: "link";
+                    _key: string;
+                  }>;
+                  level?: number;
+                  _type: "block";
+                  _key: string;
+                }
+            >;
+          }> | null;
+          curatedCount: number | null;
+          contentLayout: null;
+        } | null;
+        showTitle?: boolean;
+        layout?:
+          | "layout1"
+          | "layout2"
+          | "layout3"
+          | "layout4"
+          | "layout5"
+          | "layout6";
+      }
+    | {
+        _key: string;
+        _type: "regularsSection";
+        title?: string;
+        malayalamTitle?: string;
+        showTitle?: boolean;
+        layout?:
+          | "layout1"
+          | "layout2"
+          | "layout3"
+          | "layout4"
+          | "layout5"
+          | "layout6";
+        regulars: Array<{
+          _id: string;
+          _type: "regular";
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          title?: string;
+          malayalamTitle?: string;
+          slug?: Slug;
+          coverImage?: CustomImage;
+          description?: string;
+          parts?: Array<
+            {
+              _key: string;
+            } & ArticleReference
+          >;
+        }> | null;
+      }
+  > | null;
+} | null;
 
-type ArrayOf<T> = Array<
-  T & {
-    _key: string;
+// Source: ../magazine/sanity/api.ts
+// Variable: ARTICLE
+// Query: *[_type == "article" && slug.current == $slug][0]{  title,  malayalamTitle,  publishedAt,  description,  mainImage,  author->{    name,    malayalamName,    slug,    profileImage  },  categories[]->{    title,    malayalamTitle,    slug  },  series->{    title,    malayalamTitle,    slug  },  contentLayout[]{    ...,    _type == "sideNoteReference" => @->{      _type,      title,      content,      image    }  }}
+export type ARTICLE_RESULT = {
+  title: string | null;
+  malayalamTitle: string | null;
+  publishedAt: string | null;
+  description: string | null;
+  mainImage: CustomImage | null;
+  author: {
+    name: string | null;
+    malayalamName: string | null;
+    slug: Slug | null;
+    profileImage: CustomImage | null;
+  } | null;
+  categories: Array<{
+    title: string | null;
+    malayalamTitle: string | null;
+    slug: Slug | null;
+  }> | null;
+  series: {
+    title: string | null;
+    malayalamTitle: string | null;
+    slug: Slug | null;
+  } | null;
+  contentLayout: Array<
+    | {
+        _key: string;
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+      }
+    | {
+        adFormat?: "display" | "in-article" | "in-feed";
+        label?: string;
+        _type: "adComponent";
+        _key: string;
+      }
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+  > | null;
+} | null;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: AUTHORS
+// Query: *[_type == "author"] | order(orderRank asc){      ...    }
+export type AUTHORS_RESULT = Array<{
+  _id: string;
+  _type: "author";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  malayalamName?: string;
+  slug?: Slug;
+  orderRank?: string;
+  profileImage?: CustomImage;
+  bio?: string;
+}>;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: AUTHORS_PAGINATED
+// Query: *[_type == "author"] | order(orderRank asc)[$start...$end] {      ...,      "slug": slug.current    }
+export type AUTHORS_PAGINATED_RESULT = Array<{
+  _id: string;
+  _type: "author";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  malayalamName?: string;
+  slug: string | null;
+  orderRank?: string;
+  profileImage?: CustomImage;
+  bio?: string;
+}>;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: ARTICLES_BY_AUTHOR_PAGINATED
+// Query: *[_type == "article" && author._ref == $authorId] | order(publishedAt desc)[$start...$end] {    _id,    malayalamTitle,    description,    mainImage,    "slug": slug.current,    publishedAt  }
+export type ARTICLES_BY_AUTHOR_PAGINATED_RESULT = Array<{
+  _id: string;
+  malayalamTitle: string | null;
+  description: string | null;
+  mainImage: CustomImage | null;
+  slug: string | null;
+  publishedAt: string | null;
+}>;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: AUTHOR_BY_SLUG
+// Query: *[_type == "author" && slug.current == $slug][0] {    ...,    "slug": slug.current  }
+export type AUTHOR_BY_SLUG_RESULT = {
+  _id: string;
+  _type: "author";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  malayalamName?: string;
+  slug: string | null;
+  orderRank?: string;
+  profileImage?: CustomImage;
+  bio?: string;
+} | null;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: AUTHORS_SEARCH
+// Query: *[_type == "author" && (name match $searchTerm || malayalamName match $searchTerm || bio match $searchTerm)]   | order(orderRank asc)[$start...$end] {    ...,    "slug": slug.current  }
+export type AUTHORS_SEARCH_RESULT = Array<{
+  _id: string;
+  _type: "author";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  malayalamName?: string;
+  slug: string | null;
+  orderRank?: string;
+  profileImage?: CustomImage;
+  bio?: string;
+}>;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: ARTICLES_SEARCH
+// Query: *[_type == "article" &&     (searchTerm == "*" || (      title match $searchTerm ||       malayalamTitle match $searchTerm ||       description match $searchTerm ||       tags[] match $searchTerm ||       categories[]->title match $searchTerm ||       author->name match $searchTerm ||       author->malayalamName match $searchTerm    )) &&    ($year == "" || publishedAt match $year + "*")  ] | order(publishedAt desc) [$start...$end] {    ...,    "slug": slug.current,    author-> { name, malayalamName }  }
+export type ARTICLES_SEARCH_RESULT = Array<{
+  _id: string;
+  _type: "article";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  malayalamTitle?: string;
+  slug: string | null;
+  description?: string;
+  mainImage?: CustomImage;
+  publishedAt?: string;
+  author: {
+    name: string | null;
+    malayalamName: string | null;
+  } | null;
+  categories?: Array<
+    {
+      _key: string;
+    } & CategoryReference
+  >;
+  series?: RegularReference;
+  tags?: Array<string>;
+  contentLayout?: Array<
+    | ({
+        _key: string;
+      } & SideReference)
+    | {
+        adFormat?: "display" | "in-article" | "in-feed";
+        label?: string;
+        _type: "adComponent";
+        _key: string;
+      }
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+  >;
+}>;
+
+// Source: ../magazine/sanity/api.ts
+// Variable: UNIQUE_YEARS
+// Query: *[_type == "article" && defined(publishedAt)] | order(publishedAt desc).publishedAt
+export type UNIQUE_YEARS_RESULT = Array<string>;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '\n  *[_type == "settings"][0]{\n    sections[]{\n      ...,\n      // --------------------------------\n      // COLLECTION SECTION\n      // --------------------------------\n      _type == "collectionSection" => {\n        ...,\n\n        collection->{\n          ...,\n          "curatedCount": count(articles),\n          "articles": null,\n          "contentLayout": null,\n          layoutArticles[]->{\n            ...,\n  \n            author->{\n              ...,\n            }\n          }\n        }\n      },\n  \n      // --------------------------------\n      // AUTHORS SECTION\n      // --------------------------------\n      _type == "authorsSection" => {\n        ...,\n  \n        authors[]->{\n          ...,\n        }\n      },\n  \n      // --------------------------------\n      // REGULARS SECTION\n      // --------------------------------\n      _type == "regularsSection" => {\n        ...,\n  \n        regulars[]->{\n          ...,\n        }\n      },\n  \n      // --------------------------------\n      // AD SECTION\n      // --------------------------------\n      _type == "advertisementSection" => {\n        ...\n      }\n  \n    }\n  }\n  ': CONFIG_RESULT;
+    '*[_type == "article" && slug.current == $slug][0]{\n  title,\n  malayalamTitle,\n  publishedAt,\n  description,\n  mainImage,\n  author->{\n    name,\n    malayalamName,\n    slug,\n    profileImage\n  },\n  categories[]->{\n    title,\n    malayalamTitle,\n    slug\n  },\n  series->{\n    title,\n    malayalamTitle,\n    slug\n  },\n  contentLayout[]{\n    ...,\n    _type == "sideNoteReference" => @->{\n      _type,\n      title,\n      content,\n      image\n    }\n  }\n}': ARTICLE_RESULT;
+    '\n    *[_type == "author"] | order(orderRank asc){\n      ...\n    }\n  ': AUTHORS_RESULT;
+    '\n    *[_type == "author"] | order(orderRank asc)[$start...$end] {\n      ...,\n      "slug": slug.current\n    }\n': AUTHORS_PAGINATED_RESULT;
+    '\n  *[_type == "article" && author._ref == $authorId] | order(publishedAt desc)[$start...$end] {\n    _id,\n    malayalamTitle,\n    description,\n    mainImage,\n    "slug": slug.current,\n    publishedAt\n  }\n': ARTICLES_BY_AUTHOR_PAGINATED_RESULT;
+    '\n  *[_type == "author" && slug.current == $slug][0] {\n    ...,\n    "slug": slug.current\n  }\n': AUTHOR_BY_SLUG_RESULT;
+    '\n  *[_type == "author" && (name match $searchTerm || malayalamName match $searchTerm || bio match $searchTerm)] \n  | order(orderRank asc)[$start...$end] {\n    ...,\n    "slug": slug.current\n  }\n': AUTHORS_SEARCH_RESULT;
+    '\n  *[_type == "article" && \n    (searchTerm == "*" || (\n      title match $searchTerm || \n      malayalamTitle match $searchTerm || \n      description match $searchTerm || \n      tags[] match $searchTerm || \n      categories[]->title match $searchTerm || \n      author->name match $searchTerm || \n      author->malayalamName match $searchTerm\n    )) &&\n    ($year == "" || publishedAt match $year + "*")\n  ] | order(publishedAt desc) [$start...$end] {\n    ...,\n    "slug": slug.current,\n    author-> { name, malayalamName }\n  }\n': ARTICLES_SEARCH_RESULT;
+    '\n  *[_type == "article" && defined(publishedAt)] | order(publishedAt desc).publishedAt\n': UNIQUE_YEARS_RESULT;
   }
->;
+}
