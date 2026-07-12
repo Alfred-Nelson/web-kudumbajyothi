@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import { MasterDetailIcon } from '@sanity/icons'
 
 export default defineType({
     name: 'side',
     title: 'Side',
     type: 'document',
+    icon: MasterDetailIcon,
     fields: [
         // --- TITLE SETTINGS ---
         defineField({
@@ -18,7 +20,7 @@ export default defineType({
             title: 'Show Title on Website?',
             description: 'Toggle ON to display the title above the content.',
             type: 'boolean',
-            initialValue: true, // Default to showing it
+            initialValue: true,
         }),
 
         // --- CONTENT ---
@@ -34,7 +36,6 @@ export default defineType({
             name: 'image',
             title: 'Side Image',
             type: 'customImage',
-            // Removed the fieldset wrapper to keep it clean like Article
         })
     ],
     preview: {

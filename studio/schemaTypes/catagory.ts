@@ -1,12 +1,13 @@
 import { defineField, defineType } from 'sanity'
+import { PackageIcon } from '@sanity/icons'
 
 export default defineType({
     name: 'category',
     title: 'Category',
     type: 'document',
+    icon: PackageIcon,
     fieldsets: [
         { name: 'names', title: 'Names & URL', options: { collapsible: true, collapsed: false } },
-        { name: 'media', title: 'Category Image', options: { collapsible: true, collapsed: false } }
     ],
     fields: [
         defineField({
@@ -35,7 +36,11 @@ export default defineType({
             name: 'image',
             title: 'Image',
             type: 'customImage',
-            fieldset: 'media'
         })
-    ]
+    ],
+    preview: {
+        select: {
+            title: 'malayalamTitle',
+        }
+    }
 })

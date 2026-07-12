@@ -1,9 +1,12 @@
 import { defineField, defineType } from 'sanity'
+import { UsersIcon } from '@sanity/icons'
+import { orderRankField } from '@sanity/orderable-document-list'
 
 export default defineType({
     name: 'author',
     title: 'Author',
     type: 'document',
+    icon: UsersIcon,
     fieldsets: [
         {
             name: 'basic',
@@ -33,6 +36,7 @@ export default defineType({
             fieldset: 'basic',
             validation: (rule) => rule.required(),
         }),
+        orderRankField({ type: "collection" }),
         defineField({
             name: 'profileImage',
             title: 'Profile Image',
