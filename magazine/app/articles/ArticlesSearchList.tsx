@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Search, LoaderCircle, Ellipsis } from "lucide-react";
 import SanityImage from '../components/SanityImage';
 import APIS from '@/sanity/api';
-import { Article } from '@/sanity/types';
+import { Article, ARTICLES_SEARCH_RESULT } from '@/sanity/types';
 import { YearFilter } from './YearFilter';
 
 const getMalayalamMonth = (dateString?: string) => {
@@ -15,8 +15,8 @@ const getMalayalamMonth = (dateString?: string) => {
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
 };
 
-export function ArticleSearchList({ initialArticles }: { initialArticles: Article[] }) {
-    const [articles, setArticles] = useState<Article[]>(initialArticles);
+export function ArticleSearchList({ initialArticles }: { initialArticles: (Article | ARTICLES_SEARCH_RESULT[number])[] }) {
+    const [articles, setArticles] = useState<(Article | ARTICLES_SEARCH_RESULT[number])[]>(initialArticles);
     const [years, setYears] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
@@ -31,7 +31,7 @@ export function ArticleSearchList({ initialArticles }: { initialArticles: Articl
 
     // Grouping
     const groupedArticles = useMemo(() => {
-        const groups: Record<string, Article[]> = {};
+        const groups: Record<string, (Article | ARTICLES_SEARCH_RESULT[number])[]> = {};
         articles.forEach((article) => {
             const dateKey = getMalayalamMonth(article.publishedAt);
             if (!groups[dateKey]) groups[dateKey] = [];
@@ -92,7 +92,7 @@ export function ArticleSearchList({ initialArticles }: { initialArticles: Articl
                         <h3 className="font-family-uroob text-4xl border-b border-black/10 pb-2">{month}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
                             {items.map((article) => (
-                                <ArticleCard key={article._id} article={article} />
+                                <ArticleCard key={article._id} article={article as ARTICLES_SEARCH_RESULT[number]} />
                             ))}
                         </div>
                     </div>
@@ -107,7 +107,7 @@ export function ArticleSearchList({ initialArticles }: { initialArticles: Articl
     );
 }
 
-function ArticleCard({ article }: { article: Article }) {
+function ArticleCard({ article }: { article: ARTICLES_SEARCH_RESULT[number] }) {
     return (
         <Link href={`/articles/${article.slug}`} className="group flex flex-col">
             <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-warm-grey-2">

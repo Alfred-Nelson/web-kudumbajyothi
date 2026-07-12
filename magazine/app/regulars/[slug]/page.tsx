@@ -22,7 +22,7 @@ export default async function RegularPage({ params }: { params: Promise<{ slug: 
                             <SanityImage
                                 image={regular.coverImage}
                                 width={1600}
-                                className="!object-cover"
+                                className="object-cover!"
                             />
                         </div>
 
@@ -37,7 +37,7 @@ export default async function RegularPage({ params }: { params: Promise<{ slug: 
                     {regular.coverImage?.placement !== "background" && (
                         <div className="w-full lg:w-1/3 flex justify-center lg:justify-start">
 
-                            <div className="relative w-full max-w-sm lg:max-w-md aspect-[4/5] max-h-[500px] overflow-hidden rounded-2xl shrink-0">
+                            <div className="relative w-full max-w-sm lg:max-w-md aspect-4/5 max-h-[500px] overflow-hidden rounded-2xl shrink-0">
                                 <SanityImage
                                     image={regular.coverImage}
                                     width={600}

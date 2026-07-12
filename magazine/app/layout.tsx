@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "./header";
 import localFont from 'next/font/local'
 import APIS from "@/sanity/api";
-import CONTEXT from "./context";
 
 
 const uroob = localFont({
